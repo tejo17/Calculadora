@@ -1,6 +1,6 @@
 ﻿
 Public Class Form1
-    Dim contador As Integer = 0
+    Dim isDigito As Boolean
     Dim valor1 As Double
         Dim valor2 As Double
         Dim Resu As Double
@@ -187,24 +187,15 @@ Public Class Form1
         oper.Text() = ""
             view = ""
             operadorPendiente = ""
-        contador = 0
+        isDigito = False
         comaComp = False
         positComp = False
     End Sub
 
     Private Sub accion(v1 As String, v2 As String)
         comaComp = False
-        If v1 IsNot "" And comparadorSigno IsNot v1 And oper.Text IsNot "" Then
 
-            view = view.Remove(oper.Text.Length - 2)
-            view = view & v2 & " "
-            operadorPendiente = ""
-            operar(v1)
-            symbol = v2
-            oper.Text = view
-        End If
-
-        If contador = 0 Then
+        If isDigito Then
             If (inputCalc.Text IsNot "") Then
 
                 view = view & inputCalc.Text & " " & v2 & " "
@@ -212,16 +203,24 @@ Public Class Form1
                 inputCalc.Text = ""
                 symbol = v2
                 oper.Text = view
-                contador = 1
                 If valor1 = Nothing Then
                     valor1 = valor2
                     inputCalc.Text = valor2
+                    isDigito = False
                 Else
                     inputCalc.Text = valor1
+                    isDigito = False
                 End If
             Else
-                contador = 0
+
             End If
+        Else
+            view = view.Remove(oper.Text.Length - 2)
+            view = view & v2 & " "
+            operadorPendiente = ""
+            operar(v1)
+            symbol = v2
+            oper.Text = view
         End If
         comparadorSigno = v1
     End Sub
@@ -243,26 +242,27 @@ Public Class Form1
     Private Sub accionEqual()
 
         If (inputCalc.Text IsNot "") Then
+            If isDigito Then
+                valor2 = inputCalc.Text()
+            End If
 
-            valor2 = inputCalc.Text()
             If (operadorPendiente = "suma") Then
-                valor1 = valor1 + valor2
+                    valor1 = valor1 + valor2
+                End If
+                If (operadorPendiente = "resta") Then
+                    valor1 = valor1 - valor2
+                End If
+                If (operadorPendiente = "multi") Then
+                    valor1 = valor1 * valor2
+                End If
+                If (operadorPendiente = "divi") Then
+                    valor1 = valor1 / valor2
+                End If
+                inputCalc.Text() = valor1
+                view = ""
+                oper.Text() = ""
             End If
-            If (operadorPendiente = "resta") Then
-                valor1 = valor1 - valor2
-            End If
-            If (operadorPendiente = "multi") Then
-                valor1 = valor1 * valor2
-            End If
-            If (operadorPendiente = "divi") Then
-                valor1 = valor1 / valor2
-            End If
-            operadorPendiente = ""
-            inputCalc.Text() = valor1
-            view = ""
-            oper.Text() = ""
-            End If
-
+        isDigito = False
     End Sub
     Private Sub accionRetroceso()
         If inputCalc.Text IsNot "" Then
@@ -289,7 +289,7 @@ Public Class Form1
             End Select
             operadorPendiente = operador
 
-        End Function
+    End Function
 
     Private Sub Agregar(numero As String)
         If pulsoOperador Then
@@ -308,7 +308,7 @@ Public Class Form1
             inputCalc.Text() = inputCalc.Text() & numero
         End If
 
-        contador = 0
+        isDigito = True
         ButtonEqual.Select()
     End Sub
 
